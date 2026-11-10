@@ -1,115 +1,147 @@
-# Plataforma configurable de credencialización y gestión de beneficios para membresías
+PLATAFORMA CONFIGURABLE DE CREDENCIALIZACIÓN Y GESTIÓN DE BENEFICIOS PARA MEMBRESÍAS
+Prototipo - Trabajo Final de Graduación, Ingeniería en Software
+Universidad Siglo 21 – Jesús Martínez (SOF01548)
 
-**Frontend del prototipo** basado en el Trabajo Final de Graduación de Jesús Martínez (Universidad Siglo 21 – Ingeniería en Software).
+El sistema permite administrar miembros, tipos de membresía, credenciales digitales y
+beneficios de una organización. El miembro puede ver su credencial, consultar los
+beneficios disponibles y generar un código QR para utilizarlos. El proveedor valida
+el código QR (credencial, vigencia de la membresía y condiciones del beneficio) y
+confirma la utilización. La organización consulta el historial de operaciones.
 
-Este proyecto es una **aplicación web (SPA)** que replica las pantallas, roles y flujos funcionales descritos en el TFG:
+Este repositorio contiene el frontend del prototipo. Funciona en la propia computadora:
+se abre desde el navegador.
 
-- **Organización**: gestión de miembros, tipos de membresía, asignación de membresías, habilitación/deshabilitación de credenciales digitales, configuración de beneficios y consulta de utilizaciones.
-- **Miembro**: consulta de datos y membresía, visualización de credencial digital, listado de beneficios disponibles, generación de código QR para utilización e historial propio.
-- **Proveedor**: validación del código QR (credencial, membresía, vigencia, tipo y límites) y confirmación/registro de la utilización.
+================================================================================
+QUÉ HAY QUE TENER INSTALADO
+================================================================================
 
-Los datos son **mock** (en memoria) y se basan en los ejemplos del documento (Juan Pérez, Ana Gómez, Luis Romero, Farmacia Central, Cine Centro, etc.).
+- Un navegador actualizado (Chrome, Edge o Firefox).
+- Visual Studio Code (recomendado), para editar y levantar el prototipo con Live Server.
+  Se descarga desde https://code.visualstudio.com/
+- (Opcional) Extensión "Live Server" de Ritwick Dey, dentro de VS Code.
+- (Opcional) Python 3, solo si se quiere usar el servidor local por consola.
+  Se descarga desde https://www.python.org/. Al instalarlo en Windows, marcar
+  la opción "Add python.exe to PATH".
+- (Opcional) Node.js, como alternativa a Python para servir los archivos.
+  Se descarga desde https://nodejs.org/
 
----
+No hace falta instalar Java, Android Studio ni PostgreSQL para correr este frontend.
+Los datos son de demostración (en memoria) y se reinician al recargar la página.
 
-## Estructura de carpetas
+================================================================================
+PUESTA EN MARCHA
+================================================================================
 
-```
+1) Abrir el proyecto
+
+   Descomprimir el ZIP (si se descargó así) y abrir la carpeta "membresias-app"
+   en Visual Studio Code:
+   Archivo → Abrir carpeta → seleccionar "membresias-app".
+
+2) Ejecutar el prototipo (elegir una forma)
+
+   Forma A – Live Server (la más simple en VS Code)
+   - Instalar la extensión "Live Server" si no está instalada.
+   - Click derecho sobre el archivo index.html → "Open with Live Server".
+   - Se abre el navegador solo.
+
+   Forma B – Doble clic
+   - Ir a la carpeta membresias-app en el Explorador de archivos.
+   - Doble clic en index.html.
+   - Se abre en el navegador predeterminado.
+
+   Forma C – Consola con Python
+   - Abrir una terminal en la carpeta membresias-app.
+   - Escribir:
+       python -m http.server 8080
+   - Abrir el navegador en: http://localhost:8080
+
+   Forma D – Consola con Node
+   - En la misma carpeta, escribir:
+       npx --yes serve .
+   - Abrir la URL que muestre la consola (por ejemplo http://localhost:3000).
+
+3) Iniciar sesión con un usuario de demo
+
+   Organización:   usuario  org         contraseña  org123
+   Miembro:        usuario  miembro     contraseña  miembro123
+   Proveedor:      usuario  proveedor   contraseña  proveedor123
+
+   (Hay un segundo miembro de prueba: usuario miembro2 / contraseña miembro123)
+
+================================================================================
+FLUJO DE PRUEBA SUGERIDO
+================================================================================
+
+1. Entrar como "org".
+   - Revisar la lista de miembros.
+   - Abrir un miembro y ver o cambiar el estado de su credencial.
+   - Revisar beneficios.
+
+2. Cerrar sesión y entrar como "miembro".
+   - Ver datos y membresía.
+   - Abrir "Mi credencial".
+   - Ir a Beneficios, elegir uno (por ejemplo "20 % de descuento") y generar el QR.
+
+3. Cerrar sesión y entrar como "proveedor".
+   - Usar el botón "Usar último token generado (demo)" o pegar el código del QR.
+   - Validar. Si todo está correcto, confirmar la utilización.
+
+4. Volver a "org" o a "miembro" y comprobar que la utilización quedó registrada
+   en Utilizaciones o en el Historial.
+
+================================================================================
+QUÉ HACE CADA ROL
+================================================================================
+
+Organización
+- Alta y edición de miembros
+- Tipos de membresía
+- Asignación de membresía (tipo, fechas, estado)
+- Habilitar / deshabilitar credencial digital
+- Configurar beneficios (vigencia, tipos admitidos, límite de usos)
+- Consultar utilizaciones
+
+Miembro
+- Consultar sus datos y su membresía
+- Ver la credencial digital (si está habilitada)
+- Ver beneficios disponibles para su tipo de membresía
+- Generar código QR para usar un beneficio
+- Ver su historial de utilizaciones
+
+Proveedor
+- Validar el código QR
+- El sistema comprueba: credencial habilitada, membresía activa y vigente,
+  beneficio vigente, tipo de membresía admitido y límite de usos
+- Confirmar o rechazar la utilización
+
+================================================================================
+ESTRUCTURA DE CARPETAS
+================================================================================
+
 membresias-app/
-├── index.html              # Punto de entrada (login + shell de la app)
-├── css/
-│   └── styles.css          # Estilos Material-like, responsive, mobile-first
-├── js/
-│   ├── data.js             # Datos mock (miembros, membresías, beneficios, utilizaciones…)
-│   ├── utils.js            # Formateo, badges, helpers de dominio
-│   ├── auth.js             # Login / sesión (sessionStorage)
-│   ├── app.js              # Router por rol y navegación
-│   └── views/
-│       ├── org.js          # Pantallas de la Organización
-│       ├── member.js       # Pantallas del Miembro
-│       └── provider.js     # Validación QR del Proveedor
-├── assets/                 # (reservado para imágenes estáticas)
-└── README.md
-```
+  index.html          Página principal (login y aplicación)
+  css/
+    styles.css        Estilos
+  js/
+    data.js           Datos de demostración
+    utils.js          Funciones auxiliares
+    auth.js           Inicio de sesión
+    app.js            Navegación según el rol
+    views/
+      org.js          Pantallas de la organización
+      member.js       Pantallas del miembro
+      provider.js     Validación del proveedor
+  README.md           Este archivo
 
----
+================================================================================
+NOTAS
+================================================================================
 
-## Cómo ejecutarlo en VS Code
-
-### Opción 1 – Extensión Live Server (recomendada)
-
-1. Abra la carpeta `membresias-app` en VS Code.
-2. Instale la extensión **Live Server** (Ritwick Dey) si no la tiene.
-3. Click derecho sobre `index.html` → **Open with Live Server**.
-4. Se abrirá el navegador en `http://127.0.0.1:5500` (o el puerto que asigne).
-
-### Opción 2 – Servidor Python (sin extensiones)
-
-```bash
-cd membresias-app
-python3 -m http.server 8080
-```
-
-Luego abra en el navegador: `http://localhost:8080`
-
-### Opción 3 – Node (si tiene instalado)
-
-```bash
-npx serve .
-```
-
----
-
-## Usuarios de demostración
-
-| Usuario    | Contraseña     | Rol          |
-|------------|----------------|--------------|
-| `org`      | `org123`       | Organización |
-| `miembro`  | `miembro123`   | Miembro (Juan Pérez – Platino) |
-| `miembro2` | `miembro123`   | Miembro (Ana Gómez – Oro) |
-| `proveedor`| `proveedor123` | Proveedor (Farmacia Central) |
-
----
-
-## Flujo de demo sugerido
-
-1. Inicie sesión como **org** → revise miembros, asigne o edite membresías, gestione beneficios.
-2. Cierre sesión e ingrese como **miembro** → vea su credencial, consulte beneficios y genere un código QR para “20 % de descuento”.
-3. Cierre sesión e ingrese como **proveedor** → use el botón “Usar último token generado (demo)” o pegue el token, valide y confirme la utilización.
-4. Vuelva a **org** o **miembro** y verifique que la utilización aparece en el listado / historial.
-
----
-
-## Correspondencia con el TFG
-
-| Historia de usuario | Implementación en este frontend |
-|---------------------|---------------------------------|
-| HU-001 Inicio de sesión | Login por rol + sesión |
-| HU-002 Gestión de miembros | Alta / edición / listado |
-| HU-003 Consulta de datos propios | Inicio del miembro |
-| HU-004 Tipos de membresía | CRUD de tipos |
-| HU-005 Asignación y gestión de membresías | Formulario de asignación + estados |
-| HU-006 Consulta de membresía propia | Tarjeta de membresía en inicio |
-| HU-007 Gestión del estado de credencial | Habilitar / deshabilitar desde detalle de miembro |
-| HU-008 Visualización de credencial digital | Pantalla de credencial |
-| HU-009 / HU-010 Gestión y condiciones de beneficios | Formulario completo de beneficios |
-| HU-011 Consulta de beneficios disponibles | Listado filtrado por tipo de membresía |
-| HU-012 Inicio de utilización (QR) | Generación de QR + token |
-| HU-013 Validación de beneficio | Reglas de validación en el proveedor |
-| HU-014 Confirmación y registro | Confirmación y alta de utilización |
-| HU-015 Consulta de utilizaciones (org) | Listado de utilizaciones |
-| HU-016 Historial propio (miembro) | Historial del miembro |
-
----
-
-## Notas técnicas
-
-- No requiere backend ni base de datos: todo corre en el navegador.
-- Los cambios (nuevos miembros, utilizaciones, etc.) se mantienen mientras no se recargue la página (o se limpie sessionStorage/local).
-- El código QR se genera con la librería [qrcode](https://github.com/soldair/node-qrcode) cargada desde CDN.
-- Diseño responsive (mobile-first) inspirado en Material Design, acorde a la app Android del TFG.
-
----
-
-**Autor del TFG:** Jesús Martínez · Legajo SOF01548  
-**Prototipo frontend generado a partir del documento del proyecto.**
+- Este frontend replica las pantallas y las reglas de validación del TFG.
+  En el documento del Trabajo Final de Graduación el sistema completo se plantea
+  con aplicación Android (Java), API REST en Java + Spring Boot y base de datos
+  PostgreSQL. Acá los datos son mock para poder probar sin instalar el backend.
+- Los cambios (nuevos miembros, utilizaciones, etc.) se mantienen mientras no
+  se recargue la página.
+- Autor del TFG: Jesús Martínez – Legajo SOF01548 – Tutor: Julieta Rabozzi.
